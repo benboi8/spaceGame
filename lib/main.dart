@@ -7,6 +7,21 @@ void main() {
   runApp(const MyApp());
 }
 
+void showSnackBar(
+    {required BuildContext context,
+    required String text,
+    int? duration,
+    SnackBarAction? action}) {
+  SnackBar snackBar = SnackBar(
+    content: Text(text),
+    duration: Duration(seconds: duration ?? 3),
+    action: action,
+  );
+
+  ScaffoldMessenger.of(context).clearSnackBars();
+  ScaffoldMessenger.of(context).showSnackBar(snackBar);
+}
+
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
@@ -44,7 +59,9 @@ class _HomePageState extends State<HomePage> {
     Segment segment = station.segments[station.selectedSegment];
     final Divider div = Divider(color: ColorManager.mainTextColor);
 
-    Future.delayed(const Duration(milliseconds: 1), () {setState(() {});});
+    Future.delayed(const Duration(milliseconds: 1), () {
+      setState(() {});
+    });
 
     return Scaffold(
       appBar: AppBar(),

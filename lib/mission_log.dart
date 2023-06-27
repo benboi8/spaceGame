@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'main.dart';
 import 'station.dart';
 
 import 'color_manager.dart';
@@ -24,18 +25,24 @@ class MissionLog {
         child: Center(
           child: TextButton(
               onPressed: () {
-                showDialog<void>(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return AlertDialog(
-                        title: const Text("Tasks"),
-                        content: Column(mainAxisSize: MainAxisSize.min, children: [
-                          for (Task task in tasks)
-                            Text(task.name)
-                              ],
+                if (tasks.isNotEmpty) {
+                  showDialog<void>(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                            title: const Text("Tasks"),
+                            content: Column(
+                              mainAxisSize: MainAxisSize.min, children: [
+                              for (Task task in tasks)
+                                Text(task.name)
+                            ],
                             )
                         );
-                  });
+                      });
+                }
+                else {
+                  showSnackBar(context: context, text: "No Tasks");
+                }
               },
               child: Text(
                   "${startDate.year} - ${startDate.month.toString().padLeft(2, "0")} - ${startDate.day.toString().padLeft(2, "0")}",
