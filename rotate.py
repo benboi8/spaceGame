@@ -3,7 +3,7 @@ import os
 
 homePath = "c:/Users/Ben/StudioProjects/untitled2"
 
-segment = "core"
+segment = "corridor"
 theme = "default"
 folder = f"{homePath}/assets/{theme}/{segment}/"
 refFile = f"{homePath}/refAssets/{theme}/{segment}/"

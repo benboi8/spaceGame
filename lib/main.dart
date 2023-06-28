@@ -87,7 +87,7 @@ class _HomePageState extends State<HomePage> {
                           ),
                         ),
                         div,
-                        Align(
+                        segment.name != Segment.emptyName ? Align(
                           alignment: Alignment.bottomLeft,
                           child: Text(
                             "Condition: ${segment.condition}",
@@ -95,8 +95,8 @@ class _HomePageState extends State<HomePage> {
                               color: ColorManager.mainTextColor,
                             ),
                           ),
-                        ),
-                        Align(
+                        ) : Container(),
+                        segment.name != Segment.emptyName ? Align(
                           alignment: Alignment.bottomLeft,
                           child: Text(
                             "Power: ${segment.power}",
@@ -104,8 +104,8 @@ class _HomePageState extends State<HomePage> {
                               color: ColorManager.mainTextColor,
                             ),
                           ),
-                        ),
-                        div,
+                        ) : Container(),
+                        segment.name != Segment.emptyName ? div : Container(),
                         Column(children: segment.actions(context))
                       ],
                     ),

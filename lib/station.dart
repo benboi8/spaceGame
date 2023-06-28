@@ -17,7 +17,7 @@ class Station {
   }
 
   static final Station _instance = Station._();
-  static get instance => _instance;
+  static Station get instance => _instance;
 
   StationWidget get widget => const StationWidget();
 
@@ -152,7 +152,46 @@ class Station {
 
   late int selectedSegment = coreIndex;
 
-  static void newSegment(String segmentName) {}
+  bool creatingNewSegment = false;
+  Set<int> newSegmentIndexes = {};
+  List<String> newSegmentName = [];
+
+  void addNewSegmentName(String segmentName) {
+    newSegmentName.add(segmentName);
+  }
+
+  void checkForNewSegments() {
+    if (newSegmentName.isNotEmpty) {
+      newSegment(newSegmentName[0]);
+    }
+  }
+
+  void newSegment(String segmentName) {
+    // get all valid indexes
+    Set<int> validIndexes = {};
+    for (int index = 0; index < segments.length; index ++) {
+      validIndexes.addAll(getValidIndexes(index));
+    }
+    // show this to the user
+    creatingNewSegment = true;
+    newSegmentIndexes = validIndexes;
+    // get the index they click on
+
+    // place the segment there
+  }
+
+  void addSegment(int index) {
+    if (newSegmentIndexes.contains(index)) {
+      creatingNewSegment = false;
+      segments[index] = Segment.create(newSegmentName[0]);
+      updateSegments();
+      newSegmentName.removeAt(0);
+    }
+
+    if (newSegmentName.isNotEmpty) {
+      newSegment(newSegmentName[0]);
+    }
+  }
 }
 
 class StationWidget extends StatefulWidget {
@@ -175,18 +214,29 @@ class _StationWidgetState extends State<StationWidget> {
           crossAxisCount: station.width),
       itemCount: station.segments.length,
       itemBuilder: (context, index) {
+        Future.delayed(const Duration(milliseconds: 5), () {setState(() {});});
+        station.checkForNewSegments();
+
+        bool showSegmentOutline = false;
+        if (station.creatingNewSegment) {
+          showSegmentOutline = station.newSegmentIndexes.contains(index);
+        }
+
         return GestureDetector(
             onTap: () {
               setState(() {
-                station.selectedSegment = index;
+                if (!station.creatingNewSegment) {
+                  station.selectedSegment = index;
+                } else {
+                  station.addSegment(index);
+                }
               });
             },
             child: Stack(
               children: [
                 station.segments[index].widget,
-                station.selectedSegment == index
-                    ? AssetManager().selected()
-                    : Container()
+                showSegmentOutline ? AssetManager().selected() : Container(),
+                !station.creatingNewSegment ? station.selectedSegment == index ? AssetManager().selected() : Container() : Container()
               ],
             ));
       },
@@ -199,15 +249,31 @@ class Segment {
   static const String coreName = "Core";
   static const String solarName = "Solar Array";
   static const String fabricatorName = "Fabricator";
+  static const String corridorName = "Corridor";
 
   static const List<String> buildableSegments = [
     solarName,
     fabricatorName,
+    corridorName
   ];
+
+  static Segment create(String name) {
+    switch (name) {
+      case solarName:
+        return solar();
+      case fabricatorName:
+        return fabricator();
+      case corridorName:
+        return corridor();
+      default:
+        return empty();
+    }
+  }
 
   static Segment empty() => Segment._(const EmptySegment(), emptyName);
   static Segment core() => Segment._(const CoreWidget(), coreName);
   static Segment solar() => Segment._(const SolarWidget(), solarName);
+  static Segment corridor() => Segment._(const CorridorWidget(), corridorName);
   static Segment fabricator() =>
       Segment._(const FabricatorWidget(), fabricatorName);
 
@@ -273,6 +339,8 @@ class Segment {
         break;
       case fabricatorName:
         widget = AssetManager().getFabricator(connections: connections);
+      case corridorName:
+        widget = AssetManager().getCorridor(connections: connections);
     }
   }
 }
@@ -330,5 +398,19 @@ class _FabricatorState extends State<FabricatorWidget> {
   @override
   Widget build(BuildContext context) {
     return AssetManager().getFabricator();
+  }
+}
+
+class CorridorWidget extends StatefulWidget {
+  const CorridorWidget({super.key});
+
+  @override
+  State<CorridorWidget> createState() => _CorridorWidgetState();
+}
+
+class _CorridorWidgetState extends State<CorridorWidget> {
+  @override
+  Widget build(BuildContext context) {
+    return AssetManager().getCorridor();
   }
 }

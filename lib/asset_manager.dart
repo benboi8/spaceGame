@@ -31,6 +31,10 @@ class AssetManager {
     return "$_assetsPath/empty/$index.png";
   }
 
+  static String _corridorURI(int index) {
+    return "$_assetsPath/corridor/$index.png";
+  }
+
   // TODO add animations for tiles or random tiles being selected like multiple empty tiles
   // Only show connector pieces in each tile if it is connected or show a different connector if it is connected
 
@@ -117,6 +121,10 @@ class AssetManager {
 
   Widget getFabricator({int? connections}) {
     return _getUri(_fabricatorURI(getDirection(connections ?? 0)));
+  }
+
+  Widget getCorridor({int? connections}) {
+    return _getUri(_corridorURI(getDirection(connections ?? 0)));
   }
 
   Widget _getUri(String uri) {
