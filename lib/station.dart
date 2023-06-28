@@ -26,31 +26,36 @@ class Station {
   bool hasSolar = false, hasFab = false;
   List<Segment> segments = [];
 
+  bool isOnLeftWall(int index) => index % width != 0;
+  bool isOnRightWall(int index) => index % width != width - 1;
+  bool isOnTopWall(int index) => index >= width;
+  bool isOnBottomWall(int index) => index < width * (height -1);
+
   List<int> getValidIndexes(index) {
     List<int> validIndexes = [];
 
     for (int i = 0; i < width * height; i++) {
       var segment = segments[i];
       if (segment.name != Segment.emptyName) {
-        if (i % width + 1 != 0) {
+        if (isOnLeftWall(i)) {
           if (segments[i - 1].name == Segment.emptyName) {
             // x - 1
             validIndexes.add(i - 1);
           }
         }
-        if (i % width != 0) {
+        if (isOnRightWall(i)) {
           if (segments[i + 1].name == Segment.emptyName) {
             // x + 1
             validIndexes.add(i + 1);
           }
         }
-        if (i > width) {
+        if (isOnTopWall(i)) {
           if (segments[i - width].name == Segment.emptyName) {
             // y - 1
             validIndexes.add(i - width);
           }
         }
-        if (i < width * height) {
+        if (isOnBottomWall(i)) {
           if (segments[i + width].name == Segment.emptyName) {
             // y + 1
             validIndexes.add(i + width);
@@ -105,40 +110,48 @@ class Station {
       var segment = segments[i];
 
       if (segment.name != Segment.emptyName) {
-        if (i > width) {
-          if (i % width + 1 != 0) {
-            if (segments[i - 1].name != Segment.emptyName) {
-              // x - 1
-              validIndexes += "1";
-            } else {
-              validIndexes += "0";
-            }
+        if (isOnLeftWall(i)) {
+          if (segments[i - 1].name != Segment.emptyName) {
+            // x - 1
+            validIndexes += "1";
+          } else {
+            validIndexes += "0";
           }
+        } else {
+          validIndexes += "0";
+        }
 
+        if (isOnTopWall(i)) {
           if (segments[i - width].name != Segment.emptyName) {
             // y - 1
             validIndexes += "1";
           } else {
             validIndexes += "0";
           }
+        } else {
+          validIndexes += "0";
         }
 
-        if (i % width != 0) {
+        if (isOnRightWall(i)) {
           if (segments[i + 1].name != Segment.emptyName) {
             // x + 1
             validIndexes += "1";
           } else {
             validIndexes += "0";
           }
+        } else {
+          validIndexes += "0";
         }
 
-        if (i < width * height) {
+        if (isOnBottomWall(i)) {
           if (segments[i + width].name != Segment.emptyName) {
             // y + 1
             validIndexes += "1";
           } else {
             validIndexes += "0";
           }
+        } else {
+          validIndexes += "0";
         }
       }
 
@@ -234,6 +247,7 @@ class _StationWidgetState extends State<StationWidget> {
             },
             child: Stack(
               children: [
+                AssetManager().background(index),
                 station.segments[index].widget,
                 showSegmentOutline ? AssetManager().selected() : Container(),
                 !station.creatingNewSegment ? station.selectedSegment == index ? AssetManager().selected() : Container() : Container()
@@ -331,6 +345,8 @@ class Segment {
 
   void update(int connections) {
     switch (name) {
+      case emptyName:
+        widget = AssetManager().getEmpty();
       case coreName:
         widget = AssetManager().getCore(connections: connections);
         break;

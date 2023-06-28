@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'settings.dart';
 import 'color_manager.dart';
 import 'mission_log.dart';
 import 'station.dart';
@@ -64,7 +65,19 @@ class _HomePageState extends State<HomePage> {
     });
 
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(
+        actions: [
+          IconButton(
+            onPressed: () {
+              Navigator.of(context)
+                  .push(MaterialPageRoute<void>(builder: (context) {
+                return Settings().widget;
+              }));
+            },
+            icon: const Icon(Icons.settings),
+          )
+        ],
+      ),
       body: Column(
         children: [
           MissionLog().date(context),
@@ -87,24 +100,28 @@ class _HomePageState extends State<HomePage> {
                           ),
                         ),
                         div,
-                        segment.name != Segment.emptyName ? Align(
-                          alignment: Alignment.bottomLeft,
-                          child: Text(
-                            "Condition: ${segment.condition}",
-                            style: TextStyle(
-                              color: ColorManager.mainTextColor,
-                            ),
-                          ),
-                        ) : Container(),
-                        segment.name != Segment.emptyName ? Align(
-                          alignment: Alignment.bottomLeft,
-                          child: Text(
-                            "Power: ${segment.power}",
-                            style: TextStyle(
-                              color: ColorManager.mainTextColor,
-                            ),
-                          ),
-                        ) : Container(),
+                        segment.name != Segment.emptyName
+                            ? Align(
+                                alignment: Alignment.bottomLeft,
+                                child: Text(
+                                  "Condition: ${segment.condition}",
+                                  style: TextStyle(
+                                    color: ColorManager.mainTextColor,
+                                  ),
+                                ),
+                              )
+                            : Container(),
+                        segment.name != Segment.emptyName
+                            ? Align(
+                                alignment: Alignment.bottomLeft,
+                                child: Text(
+                                  "Power: ${segment.power}",
+                                  style: TextStyle(
+                                    color: ColorManager.mainTextColor,
+                                  ),
+                                ),
+                              )
+                            : Container(),
                         segment.name != Segment.emptyName ? div : Container(),
                         Column(children: segment.actions(context))
                       ],

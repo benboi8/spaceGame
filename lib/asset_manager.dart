@@ -12,9 +12,16 @@ class AssetManager {
   static final AssetManager _instance = AssetManager._();
   static get instance => _instance;
 
-  static const String _theme = "default";
-  static const String _assetsPath = "assets/$_theme";
-  static const String _selectedURI = "$_assetsPath/selected.png";
+  static String _theme = "default";
+  static String _assetsPath = "assets/$_theme";
+  static String _selectedURI = "$_assetsPath/selected.png";
+
+  void updateTheme(String theme) {
+    _theme = theme;
+    _assetsPath = "assets/$_theme";
+    _selectedURI = "$_assetsPath/selected.png";
+  }
+
   static String _coreURI(int index) {
     return "$_assetsPath/core/$index.png";
   }
@@ -109,6 +116,10 @@ class AssetManager {
 
   Widget getEmpty() {
     return _getUri(_emptyURI(0));
+  }
+
+  Widget background(int index) {
+    return _getUri(_emptyURI(Random(index).nextInt(3)));
   }
 
   Widget getCore({int? connections}) {

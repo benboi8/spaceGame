@@ -17,15 +17,25 @@ dev_dependencies:
     sdk: flutter
 
   flutter_lints: ^2.0.0
+  test: ^1.0.0
+  flutter_launcher_icons: ^0.11.0
 
 flutter:
   uses-material-design: true
 
   assets:
     - assets/
+      # default theme
     - assets/default/
     - assets/default/empty/
     - assets/default/core/
     - assets/default/solar/
     - assets/default/fabricator/
     - assets/default/corridor/
+      # pink theme
+    - assets/pink/
+    - assets/pink/empty/
+    - assets/pink/core/
+    - assets/pink/solar/
+    - assets/pink/fabricator/
+    - assets/pink/corridor/
