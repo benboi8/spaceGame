@@ -32,6 +32,7 @@ flutter:
     - assets/default/solar/
     - assets/default/fabricator/
     - assets/default/corridor/
+    - assets/default/research/
       # pink theme
     - assets/pink/
     - assets/pink/empty/

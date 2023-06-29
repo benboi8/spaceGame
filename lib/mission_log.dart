@@ -92,6 +92,10 @@ class MissionLog {
     for (Task task in tasksToRemove) {
       tasks.remove(task);
     }
+
+    for (Segment segment in Station().segments) {
+      segment.nextDay();
+    }
   }
 
   List<Task> tasks = [];
@@ -102,6 +106,10 @@ class MissionLog {
 
   Task createSegment(String segment) {
     return Task("Create New $segment", Station().addNewSegmentName, segment, 1);
+  }
+
+  void end() {
+    // end game
   }
 }
 

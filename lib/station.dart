@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'asset_manager.dart';
 import 'color_manager.dart';
 import 'mission_log.dart';
+import 'segment_data.dart';
 
 class Station {
   factory Station() {
@@ -25,6 +26,17 @@ class Station {
   int height = 5;
   bool hasSolar = false, hasFab = false;
   List<Segment> segments = [];
+
+  int power = 100;
+  int condition = 100;
+
+  void changePower(int p) {
+    power = max(min(p, 100), 0);
+
+    if (power == 0) {
+      MissionLog().end();
+    }
+  }
 
   bool isOnLeftWall(int index) => index % width != 0;
   bool isOnRightWall(int index) => index % width != width - 1;
@@ -264,11 +276,13 @@ class Segment {
   static const String solarName = "Solar Array";
   static const String fabricatorName = "Fabricator";
   static const String corridorName = "Corridor";
+  static const String researchName = "Research";
 
   static const List<String> buildableSegments = [
     solarName,
     fabricatorName,
-    corridorName
+    corridorName,
+    researchName
   ];
 
   static Segment create(String name) {
@@ -279,22 +293,44 @@ class Segment {
         return fabricator();
       case corridorName:
         return corridor();
+      case researchName:
+        return research();
       default:
         return empty();
     }
   }
 
-  static Segment empty() => Segment._(const EmptySegment(), emptyName);
-  static Segment core() => Segment._(const CoreWidget(), coreName);
-  static Segment solar() => Segment._(const SolarWidget(), solarName);
-  static Segment corridor() => Segment._(const CorridorWidget(), corridorName);
-  static Segment fabricator() =>
-      Segment._(const FabricatorWidget(), fabricatorName);
+  static Segment empty() => Segment._(AssetManager().getEmpty(), emptyName);
+  static Segment core() => Segment._(AssetManager().getCore(), coreName);
+  static Segment solar() => Segment._(AssetManager().getSolar(), solarName);
+  static Segment corridor() => Segment._(AssetManager().getCorridor(), corridorName);
+  static Segment fabricator() => Segment._(AssetManager().getFabricator(), fabricatorName);
+  static Segment research() => Segment._(AssetManager().getResearch(), researchName);
 
   Widget widget;
   String name;
-  int condition = 100;
-  int power = 100;
+
+  Widget description(Divider div) {
+    List<Widget> list = [];
+
+    switch (name) {
+      case emptyName:
+        list.add(Align(alignment: Alignment.bottomLeft, child: Text(EmptyData.description, style: TextStyle(color: ColorManager.mainTextColor)),));
+      case coreName:
+        list.add(Align(alignment: Alignment.bottomLeft, child: Text(CoreData.description, style: TextStyle(color: ColorManager.mainTextColor)),));
+      case solarName:
+        list.add(Align(alignment: Alignment.bottomLeft, child: Text(SolarData.description, style: TextStyle(color: ColorManager.mainTextColor)),));
+      case fabricatorName:
+        list.add(Align(alignment: Alignment.bottomLeft, child: Text(FabricatorData.description, style: TextStyle(color: ColorManager.mainTextColor)),));
+        list.add(div);
+      case corridorName:
+        list.add(Align(alignment: Alignment.bottomLeft, child: Text(CorridorData.description, style: TextStyle(color: ColorManager.mainTextColor)),));
+    }
+
+    return Column(
+      children: list
+    );
+  }
 
   Segment._(this.widget, this.name);
 
@@ -357,76 +393,28 @@ class Segment {
         widget = AssetManager().getFabricator(connections: connections);
       case corridorName:
         widget = AssetManager().getCorridor(connections: connections);
+      case researchName:
+        widget = AssetManager().getResearch(connections: connections);
     }
   }
-}
 
-class EmptySegment extends StatefulWidget {
-  const EmptySegment({super.key});
-
-  @override
-  State<EmptySegment> createState() => _EmptySegmentState();
-}
-
-class _EmptySegmentState extends State<EmptySegment> {
-  @override
-  Widget build(BuildContext context) {
-    return AssetManager().getEmpty();
+  void changePower(p) {
+    Station().changePower(p);
   }
-}
 
-class CoreWidget extends EmptySegment {
-  const CoreWidget({super.key});
+  void nextDay() {
+    changePower(-1);
 
-  @override
-  State<CoreWidget> createState() => _CoreState();
-}
+    if (name == solarName) {
+      Station().changePower(SolarData.powerLimit);
+    }
 
-class _CoreState extends State<CoreWidget> {
-  @override
-  Widget build(BuildContext context) {
-    return AssetManager().getCore();
-  }
-}
+    if (name == fabricatorName) {
+      Station().changePower(FabricatorData.powerDraw);
+    }
 
-class SolarWidget extends EmptySegment {
-  const SolarWidget({super.key});
-
-  @override
-  State<SolarWidget> createState() => _SolarState();
-}
-
-class _SolarState extends State<SolarWidget> {
-  @override
-  Widget build(BuildContext context) {
-    return AssetManager().getSolar();
-  }
-}
-
-class FabricatorWidget extends EmptySegment {
-  const FabricatorWidget({super.key});
-
-  @override
-  State<FabricatorWidget> createState() => _FabricatorState();
-}
-
-class _FabricatorState extends State<FabricatorWidget> {
-  @override
-  Widget build(BuildContext context) {
-    return AssetManager().getFabricator();
-  }
-}
-
-class CorridorWidget extends StatefulWidget {
-  const CorridorWidget({super.key});
-
-  @override
-  State<CorridorWidget> createState() => _CorridorWidgetState();
-}
-
-class _CorridorWidgetState extends State<CorridorWidget> {
-  @override
-  Widget build(BuildContext context) {
-    return AssetManager().getCorridor();
+    if (name == researchName) {
+      Station().changePower(ResearchData.powerDraw);
+    }
   }
 }

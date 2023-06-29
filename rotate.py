@@ -3,8 +3,8 @@ import os
 
 homePath = "c:/Users/Ben/StudioProjects/untitled2"
 
-segment = "solar"
-theme = "pink"
+segment = "core"
+theme = "default"
 folder = f"{homePath}/assets/{theme}/{segment}/"
 refFile = f"{homePath}/refAssets/{theme}/{segment}/"
 
